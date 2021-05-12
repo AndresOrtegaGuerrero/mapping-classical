@@ -11,27 +11,27 @@
 # that they have been altered from the originals.
 
 ''' Optimizer Module'''
-
+# Import Qiskit useful libraries
+#=========================================================
 import sys
+import os
 import time
-from pyscf import gto, scf
+from pyscf import gto, scf, dft
 from pyscf import lo
-from pyscf.tools import molden, cubegen
-from pyscf.geomopt.geometric_solver import optimize
-#from QuEst import mol, working_dir, 
+from pyscf.geomopt.geometric_solver import optimize as geometric
+from pyscf.geomopt.berny_solver import optimize as berny
 import numpy
+#=========================================================
 
-"""pre_energy, mol , "HF", "R", **conv_params
-Args:
-    pre_energy: Previous single point energy calcualtion generated previously
-    mol : Molecule build by the gto module
-    "HF" : HF standard theory for optimizing simple coordinates, "KS" for DFT theory
-    "R" : Restricted shell of the calcualtion, "O" for open shell calcualtions
-    conv_params: Specific paramenters for the optimization convergence
-    
-Raises:
-    Q3_Error: Invalid Input
-"""
+# Modules for the Molecule, working directory and pre-run energies
+
+from QuEst import working_dir, electronic_set
+from ..molecule import Molecule
+
+mol = Molecule
+method = electronic_set{method}
+shell = electronic_set{shell}
+
 
 conv_params = { # These are the default settings
     'convergence_energy': 1e-6,  # Eh
@@ -41,21 +41,20 @@ conv_params = { # These are the default settings
     'convergence_dmax': 1.8e-3,  # Angstrom
 }
 
-def Q3OptimizerDriver(pre_energy, mol , HF, R, conv_params):
+def Q3OptimizerDriver(pre_energy,mol,method,shell,**conv_params):
     if pre_energy ==True:
         opt_pre = optimize(pre_energy, **conv_params)
         opt_geom = opt_pre.tofile(working_dir+'/opt-geom.xyz')
     else:
-        if theory==KS:
+        if method==KS:
             if shell == O:
                 SPE =scf.UKS(mol).run()
             else shell == R:
                 SPE =scf.RKS(mol).run()
-        else theory == HF:
+        else method == HF:
             if shell == O:
                 SPE =scf.UHF(mol).run()
             else shell == R:
                 SPE =scf.RHF(mol).run()
-
         SPE_opt = optimize(SPE, **conv_params)
         opt_geom = mol_eq.tofile(working_dir+'opt-geom.xyz')
